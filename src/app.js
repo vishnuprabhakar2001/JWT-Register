@@ -5,7 +5,6 @@ import config from "./config/config.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 // Routes
-import userRoutes from "./routes/user.routes.js";
 import organisationAdminRoutes from "./routes/organisationAdmin.routes.js";
 import organisationSubadminRoutes from "./routes/organisationSubadmin.routes.js";
 import gradesRoutes from "./routes/grades.routes.js";
@@ -95,8 +94,6 @@ app.get("/health", (req, res) => {
 // --------------------------------------------------
 // API Routes
 // --------------------------------------------------
-app.use("/api/users", userRoutes);
-app.use("/api", userRoutes);
 app.use("/api/organisation-admin", organisationAdminRoutes);
 app.use("/api/organisation-admin/subadmins", organisationSubadminRoutes);
 app.use("/api/grades", gradesRoutes);

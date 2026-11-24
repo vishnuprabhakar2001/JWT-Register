@@ -342,6 +342,57 @@ export const markAllChatNotificationsRead = async (currentUser) => {
   };
 };
 
+export const editRoomMessage = async (roomId, messageId, newText, currentUser) => {
+  const msg = await ChatMessage.findOne({ _id: messageId, room_id: roomId, sender_id: currentUser.id });
+  if (!msg) {
+    throw new ApiError(404, "Message not found or you are not the sender.");
+  }
+  const diffSec = (Date.now() - new Date(msg.created_at).getTime()) / 1000;
+  if (diffSec > 120) {
+    throw new ApiError(400, "Message can only be edited within 2 minutes of sending.");
+  }
+  msg.message_text = newText;
+  msg.is_edited = true;
+  await msg.save();
+  return {
+    success: true,
+    message: "Message edited successfully.",
+    data: msg,
+  };
+};
+
+export const deleteRoomForUser = async (roomId, currentUser) => {
+  return await clearRoomMessages(roomId, currentUser);
+};
+
+export const searchRoomMentions = async (roomId, currentUser, search = "") => {
+  const members = await getChatMembers(currentUser, search);
+  return {
+    success: true,
+    data: members.data || [],
+  };
+};
+
+export const editRoomMessageController = asyncHandler(async (req, res) => {
+  const result = await editRoomMessage(
+    req.params.room_id,
+    req.params.message_id,
+    req.body.message || req.body.message_text,
+    req.current_user
+  );
+  return res.status(200).json(result);
+});
+
+export const deleteRoomForUserController = asyncHandler(async (req, res) => {
+  const result = await deleteRoomForUser(req.params.room_id, req.current_user);
+  return res.status(200).json(result);
+});
+
+export const searchRoomMentionsController = asyncHandler(async (req, res) => {
+  const result = await searchRoomMentions(req.params.room_id, req.current_user, req.query.search);
+  return res.status(200).json(result);
+});
+
 export const listUserChatRoomsController = asyncHandler(async (req, res) => {
   const includeInactive = req.query.include_inactive === "true";
   const result = await listUserChatRooms(req.current_user, includeInactive);

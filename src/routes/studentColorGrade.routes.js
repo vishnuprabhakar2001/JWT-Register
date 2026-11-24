@@ -4,6 +4,6 @@ import { getStudentColorGradeController } from "../controllers/organisationColor
 
 const router = Router();
 
-router.route("").get(authenticateStudent, getStudentColorGradeController);
+router.route("/get-student-color_grade").get(authenticateStudent, getStudentColorGradeController);
 
 export default router;
