@@ -1,12 +1,28 @@
 import mongoose from "mongoose";
+import config from "./config.js";
 
-const connectDB = async () => {
+export let superadminConnection = null;
+
+export const connectDB = async () => {
   try {
-    const connectionInstance = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(config.MONGO_URI, {
+      dbName: config.ORGANISATIONADMIN_DB_NAME,
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log(`Organisation Admin MongoDB Connected: ${conn.connection.host} (${config.ORGANISATIONADMIN_DB_NAME})`);
 
-    console.log(`MongoDB Connected: ${connectionInstance.connection.host}`);
+    // Super Admin connection
+    try {
+      superadminConnection = mongoose.createConnection(config.SUPERADMIN_MONGO_URI, {
+        dbName: config.SUPERADMIN_DB_NAME,
+        serverSelectionTimeoutMS: 5000,
+      });
+      console.log(`Super Admin MongoDB Connected: ${config.SUPERADMIN_DB_NAME}`);
+    } catch (err) {
+      console.warn("Could not connect to Super Admin MongoDB:", err.message);
+    }
   } catch (error) {
-    console.log("MongoDB connection failed:", error.message);
+    console.error("MongoDB connection failed:", error.message);
     process.exit(1);
   }
 };
