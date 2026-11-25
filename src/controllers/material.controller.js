@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import fs from "fs";
 import path from "path";
 import mongoose from "mongoose";
@@ -165,54 +164,54 @@ export const getStudentMaterialDownload = async (materialId, student) => {
   };
 };
 
-export const uploadMaterialController = asyncHandler(async (req, res) => {
+export const uploadMaterialController = async (req, res) => {
   const result = await uploadMaterial(
     req.file,
     req.body.material_title,
     req.current_admin
   );
   return res.status(201).json(result);
-});
+};
 
-export const getAllMaterialsController = asyncHandler(async (req, res) => {
+export const getAllMaterialsController = async (req, res) => {
   const result = await getAllMaterials(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const downloadMaterialController = asyncHandler(async (req, res) => {
+export const downloadMaterialController = async (req, res) => {
   const { file_path, file_name } = await getMaterialFile(
     req.params.material_id,
     req.current_admin
   );
   return res.download(file_path, file_name);
-});
+};
 
-export const viewMaterialFileController = asyncHandler(async (req, res) => {
+export const viewMaterialFileController = async (req, res) => {
   const { file_path, mime_type } = await getMaterialFile(
     req.params.material_id,
     req.current_admin
   );
   res.setHeader("Content-Type", mime_type);
   return res.sendFile(file_path);
-});
+};
 
-export const deleteMaterialController = asyncHandler(async (req, res) => {
+export const deleteMaterialController = async (req, res) => {
   const result = await deleteMaterial(
     req.params.material_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getStudentMaterialsController = asyncHandler(async (req, res) => {
+export const getStudentMaterialsController = async (req, res) => {
   const result = await getStudentMaterials(req.current_student);
   return res.status(200).json(result);
-});
+};
 
-export const downloadStudentMaterialController = asyncHandler(async (req, res) => {
+export const downloadStudentMaterialController = async (req, res) => {
   const { file_path, file_name } = await getStudentMaterialDownload(
     req.params.material_id,
     req.current_student
   );
   return res.download(file_path, file_name);
-});
+};

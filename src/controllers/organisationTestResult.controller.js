@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { AssignTest } from "../models/AssignTest.model.js";
@@ -107,15 +106,15 @@ export const getAssignedTestResult = async (assignedTestId, currentAdmin) => {
   };
 };
 
-export const getAllTestResultsController = asyncHandler(async (req, res) => {
+export const getAllTestResultsController = async (req, res) => {
   const result = await getAllTestResults(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getAssignedTestResultController = asyncHandler(async (req, res) => {
+export const getAssignedTestResultController = async (req, res) => {
   const result = await getAssignedTestResult(
     req.params.assigned_test_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};

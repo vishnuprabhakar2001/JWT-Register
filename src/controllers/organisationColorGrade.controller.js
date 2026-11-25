@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import { OrganisationColorGrade } from "../models/OrganisationColorGrade.model.js";
 
@@ -94,27 +93,27 @@ export const getStudentColorGrade = async (currentStudent) => {
   };
 };
 
-export const createColorGradeController = asyncHandler(async (req, res) => {
+export const createColorGradeController = async (req, res) => {
   const result = await createColorGrade(req.body, req.current_admin);
   return res.status(201).json(result);
-});
+};
 
-export const updateColorGradeController = asyncHandler(async (req, res) => {
+export const updateColorGradeController = async (req, res) => {
   const result = await updateColorGrade(req.body, req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const deleteColorGradeController = asyncHandler(async (req, res) => {
+export const deleteColorGradeController = async (req, res) => {
   const result = await deleteColorGrade(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getColorGradeController = asyncHandler(async (req, res) => {
+export const getColorGradeController = async (req, res) => {
   const result = await getColorGrade(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getStudentColorGradeController = asyncHandler(async (req, res) => {
+export const getStudentColorGradeController = async (req, res) => {
   const result = await getStudentColorGrade(req.current_student);
   return res.status(200).json(result);
-});
+};

@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { ChatRoom } from "../models/ChatRoom.model.js";
@@ -373,7 +372,7 @@ export const searchRoomMentions = async (roomId, currentUser, search = "") => {
   };
 };
 
-export const editRoomMessageController = asyncHandler(async (req, res) => {
+export const editRoomMessageController = async (req, res) => {
   const result = await editRoomMessage(
     req.params.room_id,
     req.params.message_id,
@@ -381,38 +380,38 @@ export const editRoomMessageController = asyncHandler(async (req, res) => {
     req.current_user
   );
   return res.status(200).json(result);
-});
+};
 
-export const deleteRoomForUserController = asyncHandler(async (req, res) => {
+export const deleteRoomForUserController = async (req, res) => {
   const result = await deleteRoomForUser(req.params.room_id, req.current_user);
   return res.status(200).json(result);
-});
+};
 
-export const searchRoomMentionsController = asyncHandler(async (req, res) => {
+export const searchRoomMentionsController = async (req, res) => {
   const result = await searchRoomMentions(req.params.room_id, req.current_user, req.query.search);
   return res.status(200).json(result);
-});
+};
 
-export const listUserChatRoomsController = asyncHandler(async (req, res) => {
+export const listUserChatRoomsController = async (req, res) => {
   const includeInactive = req.query.include_inactive === "true";
   const result = await listUserChatRooms(req.current_user, includeInactive);
   return res.status(200).json(result);
-});
+};
 
-export const directChatRoomController = asyncHandler(async (req, res) => {
+export const directChatRoomController = async (req, res) => {
   const result = await getOrCreateDirectChatRoom(
     req.current_user,
     req.body.target_user_id
   );
   return res.status(200).json(result);
-});
+};
 
-export const getChatMembersController = asyncHandler(async (req, res) => {
+export const getChatMembersController = async (req, res) => {
   const result = await getChatMembers(req.current_user, req.query.search);
   return res.status(200).json(result);
-});
+};
 
-export const getRoomMessagesController = asyncHandler(async (req, res) => {
+export const getRoomMessagesController = async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 50;
   const result = await getRoomMessages(
     req.params.room_id,
@@ -421,57 +420,57 @@ export const getRoomMessagesController = asyncHandler(async (req, res) => {
     req.query.before
   );
   return res.status(200).json(result);
-});
+};
 
-export const sendRoomMessageController = asyncHandler(async (req, res) => {
+export const sendRoomMessageController = async (req, res) => {
   const result = await sendRoomMessage(
     req.params.room_id,
     req.current_user,
     req.body.message_text
   );
   return res.status(201).json(result);
-});
+};
 
-export const unsendRoomMessageController = asyncHandler(async (req, res) => {
+export const unsendRoomMessageController = async (req, res) => {
   const result = await unsendRoomMessage(
     req.params.room_id,
     req.params.message_id,
     req.current_user
   );
   return res.status(200).json(result);
-});
+};
 
-export const deleteMessageForMeController = asyncHandler(async (req, res) => {
+export const deleteMessageForMeController = async (req, res) => {
   const result = await deleteMessageForMe(
     req.params.room_id,
     req.params.message_id,
     req.current_user
   );
   return res.status(200).json(result);
-});
+};
 
-export const clearRoomMessagesController = asyncHandler(async (req, res) => {
+export const clearRoomMessagesController = async (req, res) => {
   const result = await clearRoomMessages(req.params.room_id, req.current_user);
   return res.status(200).json(result);
-});
+};
 
-export const markRoomAsReadController = asyncHandler(async (req, res) => {
+export const markRoomAsReadController = async (req, res) => {
   const result = await markRoomAsRead(req.params.room_id, req.current_user);
   return res.status(200).json(result);
-});
+};
 
-export const getUnreadChatCountController = asyncHandler(async (req, res) => {
+export const getUnreadChatCountController = async (req, res) => {
   const result = await getUnreadChatCount(req.current_user);
   return res.status(200).json(result);
-});
+};
 
-export const getChatNotificationsController = asyncHandler(async (req, res) => {
+export const getChatNotificationsController = async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 50;
   const result = await getChatNotifications(req.current_user, limit);
   return res.status(200).json(result);
-});
+};
 
-export const markAllChatNotificationsReadController = asyncHandler(async (req, res) => {
+export const markAllChatNotificationsReadController = async (req, res) => {
   const result = await markAllChatNotificationsRead(req.current_user);
   return res.status(200).json(result);
-});
+};

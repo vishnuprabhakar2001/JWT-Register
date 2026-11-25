@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { AssignTest } from "../models/AssignTest.model.js";
@@ -147,23 +146,23 @@ export const getStudentStudySummary = async (assignedTestId, student) => {
   };
 };
 
-export const getStudentAssignedTestsController = asyncHandler(async (req, res) => {
+export const getStudentAssignedTestsController = async (req, res) => {
   const result = await getStudentAssignedTests(req.current_student);
   return res.status(200).json(result);
-});
+};
 
-export const getStudentAssignedTestDetailsController = asyncHandler(async (req, res) => {
+export const getStudentAssignedTestDetailsController = async (req, res) => {
   const result = await getStudentAssignedTestDetails(
     req.params.assigned_test_id,
     req.current_student
   );
   return res.status(200).json(result);
-});
+};
 
-export const getStudentStudySummaryController = asyncHandler(async (req, res) => {
+export const getStudentStudySummaryController = async (req, res) => {
   const result = await getStudentStudySummary(
     req.params.assigned_test_id,
     req.current_student
   );
   return res.status(200).json(result);
-});
+};

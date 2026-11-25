@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import cloudinary from "../config/cloudinary.js";
@@ -203,48 +202,48 @@ export const getStudentSavedReels = async (student) => {
   };
 };
 
-export const addReelController = asyncHandler(async (req, res) => {
+export const addReelController = async (req, res) => {
   const result = await addReel(
     req.file,
     req.body.caption,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getAllReelsController = asyncHandler(async (req, res) => {
+export const getAllReelsController = async (req, res) => {
   const result = await getAllReels(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const updateReelCaptionController = asyncHandler(async (req, res) => {
+export const updateReelCaptionController = async (req, res) => {
   const result = await updateReelCaption(
     req.params.reel_id,
     req.body.caption,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const deleteReelController = asyncHandler(async (req, res) => {
+export const deleteReelController = async (req, res) => {
   const result = await deleteReel(req.params.reel_id, req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getStudentReelsController = asyncHandler(async (req, res) => {
+export const getStudentReelsController = async (req, res) => {
   const result = await getStudentReels(req.current_student);
   return res.status(200).json(result);
-});
+};
 
-export const saveReelByStudentController = asyncHandler(async (req, res) => {
+export const saveReelByStudentController = async (req, res) => {
   const result = await saveReelByStudent(
     req.params.reel_id,
     req.current_student
   );
   return res.status(200).json(result);
-});
+};
 
-export const getStudentSavedReelsController = asyncHandler(async (req, res) => {
+export const getStudentSavedReelsController = async (req, res) => {
   const result = await getStudentSavedReels(req.current_student);
   return res.status(200).json(result);
-});
+};

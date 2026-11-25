@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { AssignTest } from "../models/AssignTest.model.js";
@@ -301,34 +300,34 @@ export const getStudentTestHistory = async (student) => {
   };
 };
 
-export const startStudentTestController = asyncHandler(async (req, res) => {
+export const startStudentTestController = async (req, res) => {
   const result = await startTest(
     req.params.assigned_test_id,
     req.current_student,
     "test"
   );
   return res.status(200).json(result);
-});
+};
 
-export const startStudentRetestController = asyncHandler(async (req, res) => {
+export const startStudentRetestController = async (req, res) => {
   const result = await startTest(
     req.params.assigned_test_id,
     req.current_student,
     "retest"
   );
   return res.status(200).json(result);
-});
+};
 
-export const submitStudentTestController = asyncHandler(async (req, res) => {
+export const submitStudentTestController = async (req, res) => {
   const result = await submitTest(
     req.params.attempt_id,
     req.body,
     req.current_student
   );
   return res.status(200).json(result);
-});
+};
 
-export const getStudentTestHistoryController = asyncHandler(async (req, res) => {
+export const getStudentTestHistoryController = async (req, res) => {
   const result = await getStudentTestHistory(req.current_student);
   return res.status(200).json(result);
-});
+};

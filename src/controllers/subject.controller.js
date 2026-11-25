@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { Subject } from "../models/Subject.model.js";
@@ -156,37 +155,37 @@ export const deleteSubject = async (subjectId, currentAdmin) => {
   };
 };
 
-export const addSubjectController = asyncHandler(async (req, res) => {
+export const addSubjectController = async (req, res) => {
   const result = await addSubject(req.body, req.current_admin);
   return res.status(201).json(result);
-});
+};
 
-export const updateSubjectController = asyncHandler(async (req, res) => {
+export const updateSubjectController = async (req, res) => {
   const result = await updateSubject(
     req.params.subject_id,
     req.body,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getSubjectByIdController = asyncHandler(async (req, res) => {
+export const getSubjectByIdController = async (req, res) => {
   const result = await getSubjectById(
     req.params.subject_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getAllSubjectsController = asyncHandler(async (req, res) => {
+export const getAllSubjectsController = async (req, res) => {
   const result = await getAllSubjects(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const deleteSubjectController = asyncHandler(async (req, res) => {
+export const deleteSubjectController = async (req, res) => {
   const result = await deleteSubject(
     req.params.subject_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};

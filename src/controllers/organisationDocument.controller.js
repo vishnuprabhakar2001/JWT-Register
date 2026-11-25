@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import crypto from "crypto";
 import ApiError from "../utils/ApiError.js";
 import cloudinary from "../config/cloudinary.js";
@@ -251,7 +250,7 @@ export const deleteDocuments = async (fileIds, currentAdmin) => {
   };
 };
 
-export const uploadOrganisationDocumentController = asyncHandler(async (req, res) => {
+export const uploadOrganisationDocumentController = async (req, res) => {
   const { grade_id, subject_id, website_url, youtube_url } = req.body;
   const file = req.file;
 
@@ -291,31 +290,31 @@ export const uploadOrganisationDocumentController = asyncHandler(async (req, res
     currentAdmin: req.current_admin,
   });
   return res.status(200).json(result);
-});
+};
 
-export const getAllDocumentsController = asyncHandler(async (req, res) => {
+export const getAllDocumentsController = async (req, res) => {
   const documents = await getAllDocuments(req.current_admin);
   return res.status(200).json({
     success: true,
     count: documents.length,
     documents,
   });
-});
+};
 
-export const deleteDocumentController = asyncHandler(async (req, res) => {
+export const deleteDocumentController = async (req, res) => {
   const fileId = req.params.file_id;
   if (!fileId || !fileId.trim()) {
     throw new ApiError(400, "file_id is required.");
   }
   const result = await deleteDocuments([fileId.trim()], req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const bulkDeleteDocumentsController = asyncHandler(async (req, res) => {
+export const bulkDeleteDocumentsController = async (req, res) => {
   const fileIds = req.body.file_ids;
   if (!Array.isArray(fileIds) || fileIds.length === 0) {
     throw new ApiError(400, "file_ids array is required.");
   }
   const result = await deleteDocuments(fileIds, req.current_admin);
   return res.status(200).json(result);
-});
+};

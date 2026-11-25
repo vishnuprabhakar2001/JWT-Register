@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-import asyncHandler from "../middlewares/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { normalizePhone } from "./studentAuth.controller.js";
 
-export const syncCandidateOtpController = asyncHandler(async (req, res) => {
+export const syncCandidateOtpController = async (req, res) => {
   const { candidate_id, organisation_id, phone, otp, otp_expires_at } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(candidate_id)) {
@@ -47,4 +46,4 @@ export const syncCandidateOtpController = asyncHandler(async (req, res) => {
     success: true,
     message: "Candidate OTP synchronized successfully.",
   });
-});
+};

@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { Grade } from "../models/Grade.model.js";
@@ -129,31 +128,31 @@ export const deleteGrade = async (gradeId, currentAdmin) => {
   };
 };
 
-export const createGradeController = asyncHandler(async (req, res) => {
+export const createGradeController = async (req, res) => {
   const result = await createGrade(req.body, req.current_admin);
   return res.status(201).json(result);
-});
+};
 
-export const updateGradeController = asyncHandler(async (req, res) => {
+export const updateGradeController = async (req, res) => {
   const result = await updateGrade(
     req.params.grade_id,
     req.body,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getGradeByIdController = asyncHandler(async (req, res) => {
+export const getGradeByIdController = async (req, res) => {
   const result = await getGradeById(req.params.grade_id, req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getAllGradesController = asyncHandler(async (req, res) => {
+export const getAllGradesController = async (req, res) => {
   const result = await getAllGrades(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const deleteGradeController = asyncHandler(async (req, res) => {
+export const deleteGradeController = async (req, res) => {
   const result = await deleteGrade(req.params.grade_id, req.current_admin);
   return res.status(200).json(result);
-});
+};

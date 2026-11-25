@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { AssignTest } from "../models/AssignTest.model.js";
@@ -77,10 +76,10 @@ export const getSubjectAttemptResults = async (subjectId, student) => {
   };
 };
 
-export const getSubjectAttemptResultsController = asyncHandler(async (req, res) => {
+export const getSubjectAttemptResultsController = async (req, res) => {
   const result = await getSubjectAttemptResults(
     req.params.subject_id,
     req.current_student
   );
   return res.status(200).json(result);
-});
+};

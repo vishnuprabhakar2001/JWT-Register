@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { AssignTest } from "../models/AssignTest.model.js";
@@ -100,15 +99,15 @@ export const getIndividualLeaderboard = async (assignedTestId, actor) => {
   };
 };
 
-export const getLiveTestsOverviewController = asyncHandler(async (req, res) => {
+export const getLiveTestsOverviewController = async (req, res) => {
   const result = await getLiveTestsOverview(req.current_user);
   return res.status(200).json(result);
-});
+};
 
-export const getIndividualLeaderboardController = asyncHandler(async (req, res) => {
+export const getIndividualLeaderboardController = async (req, res) => {
   const result = await getIndividualLeaderboard(
     req.params.assigned_test_id,
     req.current_user
   );
   return res.status(200).json(result);
-});
+};

@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { Test } from "../models/Test.model.js";
@@ -245,22 +244,22 @@ export const deleteTest = async (testId, currentAdmin) => {
   };
 };
 
-export const createTestFromDataSourceController = asyncHandler(async (req, res) => {
+export const createTestFromDataSourceController = async (req, res) => {
   const result = await createTestFromDataSource(req.body, req.current_admin);
   return res.status(201).json(result);
-});
+};
 
-export const listTestsController = asyncHandler(async (req, res) => {
+export const listTestsController = async (req, res) => {
   const result = await listTests(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getTestController = asyncHandler(async (req, res) => {
+export const getTestController = async (req, res) => {
   const result = await getTest(req.params.test_id, req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const deleteTestController = asyncHandler(async (req, res) => {
+export const deleteTestController = async (req, res) => {
   const result = await deleteTest(req.params.test_id, req.current_admin);
   return res.status(200).json(result);
-});
+};

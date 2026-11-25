@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { OrganisationDocument } from "../models/OrganisationDocument.model.js";
@@ -189,38 +188,38 @@ export const sendDocumentChatMessage = async (sessionId, userMessage, currentAdm
   res.end();
 };
 
-export const getChatDocumentsController = asyncHandler(async (req, res) => {
+export const getChatDocumentsController = async (req, res) => {
   const result = await getChatDocuments(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const createChatSessionController = asyncHandler(async (req, res) => {
+export const createChatSessionController = async (req, res) => {
   const result = await createChatSession(
     req.body.document_file_id,
     req.body.title,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getChatSessionsController = asyncHandler(async (req, res) => {
+export const getChatSessionsController = async (req, res) => {
   const result = await getChatSessions(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getChatMessagesBySessionIdController = asyncHandler(async (req, res) => {
+export const getChatMessagesBySessionIdController = async (req, res) => {
   const result = await getChatMessagesBySessionId(
     req.params.session_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const sendDocumentChatMessageController = asyncHandler(async (req, res) => {
+export const sendDocumentChatMessageController = async (req, res) => {
   await sendDocumentChatMessage(
     req.params.session_id,
     req.body.message,
     req.current_admin,
     res
   );
-});
+};

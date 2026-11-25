@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { Notification } from "../models/Notification.model.js";
@@ -86,25 +85,25 @@ export const markNotificationRead = async (notificationId, student) => {
   };
 };
 
-export const getUnreadNotificationCountController = asyncHandler(async (req, res) => {
+export const getUnreadNotificationCountController = async (req, res) => {
   const result = await getUnreadNotificationCount(req.current_student);
   return res.status(200).json(result);
-});
+};
 
-export const markAllNotificationsReadController = asyncHandler(async (req, res) => {
+export const markAllNotificationsReadController = async (req, res) => {
   const result = await markAllNotificationsRead(req.current_student);
   return res.status(200).json(result);
-});
+};
 
-export const listNotificationsController = asyncHandler(async (req, res) => {
+export const listNotificationsController = async (req, res) => {
   const result = await listNotifications(req.current_student);
   return res.status(200).json(result);
-});
+};
 
-export const markNotificationReadController = asyncHandler(async (req, res) => {
+export const markNotificationReadController = async (req, res) => {
   const result = await markNotificationRead(
     req.params.notification_id,
     req.current_student
   );
   return res.status(200).json(result);
-});
+};

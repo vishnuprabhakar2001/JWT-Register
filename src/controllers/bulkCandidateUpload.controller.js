@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
@@ -464,29 +463,29 @@ export const deleteBulkCandidates = async (candidateIds, currentAdmin) => {
 
 import { createCandidates } from "./singleCandidateUpload.controller.js";
 
-export const createBulkCandidateUploadController = asyncHandler(async (req, res) => {
+export const createBulkCandidateUploadController = async (req, res) => {
   const result = await createBulkCandidateUpload({
     grade_id: req.body.grade_id,
     file: req.file,
     currentAdmin: req.current_admin,
   });
   return res.status(200).json(result);
-});
+};
 
-export const listBulkCandidateUploadsController = asyncHandler(async (req, res) => {
+export const listBulkCandidateUploadsController = async (req, res) => {
   const result = await listBulkCandidateUploads(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const downloadBulkCandidateUploadController = asyncHandler(async (req, res) => {
+export const downloadBulkCandidateUploadController = async (req, res) => {
   const { file_path, file_name } = await downloadBulkCandidateUpload(
     req.params.upload_id,
     req.current_admin
   );
   return res.download(file_path, file_name);
-});
+};
 
-export const getBulkCandidateUploadErrorsController = asyncHandler(async (req, res) => {
+export const getBulkCandidateUploadErrorsController = async (req, res) => {
   const result = await getBulkCandidateUpload(
     req.params.upload_id,
     req.current_admin
@@ -495,53 +494,53 @@ export const getBulkCandidateUploadErrorsController = asyncHandler(async (req, r
     success: true,
     errors: result.data.errors || [],
   });
-});
+};
 
-export const bulkDeleteCandidateUploadsController = asyncHandler(async (req, res) => {
+export const bulkDeleteCandidateUploadsController = async (req, res) => {
   const result = await bulkDeleteCandidateUploads(
     req.body.upload_ids,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const deleteBulkCandidatesController = asyncHandler(async (req, res) => {
+export const deleteBulkCandidatesController = async (req, res) => {
   const result = await deleteBulkCandidates(
     req.body.candidate_ids,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const createCandidatesController = asyncHandler(async (req, res) => {
+export const createCandidatesController = async (req, res) => {
   const result = await createCandidates({
     payload: req.body,
     currentAdmin: req.current_admin,
   });
   return res.status(200).json(result);
-});
+};
 
-export const getBulkCandidateUploadController = asyncHandler(async (req, res) => {
+export const getBulkCandidateUploadController = async (req, res) => {
   const result = await getBulkCandidateUpload(
     req.params.upload_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const updateBulkCandidateUploadController = asyncHandler(async (req, res) => {
+export const updateBulkCandidateUploadController = async (req, res) => {
   const result = await updateBulkCandidateUpload(
     req.params.upload_id,
     req.body.grade_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const deleteBulkCandidateUploadController = asyncHandler(async (req, res) => {
+export const deleteBulkCandidateUploadController = async (req, res) => {
   const result = await deleteBulkCandidateUpload(
     req.params.upload_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};

@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import cloudinary from "../config/cloudinary.js";
 import { OrganisationLogo } from "../models/OrganisationLogo.model.js";
@@ -156,35 +155,35 @@ export const getStudentLogo = async (currentStudent) => {
   };
 };
 
-export const addLogoController = asyncHandler(async (req, res) => {
+export const addLogoController = async (req, res) => {
   const result = await addLogo(
     req.file,
     req.body.logo_name,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const updateLogoController = asyncHandler(async (req, res) => {
+export const updateLogoController = async (req, res) => {
   const result = await updateLogo(
     req.file,
     req.body.logo_name,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const getLogoController = asyncHandler(async (req, res) => {
+export const getLogoController = async (req, res) => {
   const result = await getLogo(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const deleteLogoController = asyncHandler(async (req, res) => {
+export const deleteLogoController = async (req, res) => {
   const result = await deleteLogo(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getStudentLogoController = asyncHandler(async (req, res) => {
+export const getStudentLogoController = async (req, res) => {
   const result = await getStudentLogo(req.current_student);
   return res.status(200).json(result);
-});
+};

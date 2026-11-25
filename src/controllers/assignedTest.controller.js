@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { Test } from "../models/Test.model.js";
@@ -171,17 +170,17 @@ export const deleteAssignedTest = async (assignedTestId, currentAdmin) => {
   };
 };
 
-export const assignTestController = asyncHandler(async (req, res) => {
+export const assignTestController = async (req, res) => {
   const result = await assignTest(req.body, req.current_admin);
   return res.status(201).json(result);
-});
+};
 
-export const getAllAssignedTestsController = asyncHandler(async (req, res) => {
+export const getAllAssignedTestsController = async (req, res) => {
   const result = await getAllAssignedTests(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const deleteAssignedTestController = asyncHandler(async (req, res) => {
+export const deleteAssignedTestController = async (req, res) => {
   const result = await deleteAssignedTest(req.params.assigned_test_id, req.current_admin);
   return res.status(200).json(result);
-});
+};

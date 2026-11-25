@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { Grade } from "../models/Grade.model.js";
 import { Subject } from "../models/Subject.model.js";
@@ -70,10 +69,10 @@ export const getOrganisationDashboard = async (lastDays, currentAdmin) => {
   };
 };
 
-export const getOrganisationDashboardController = asyncHandler(async (req, res) => {
+export const getOrganisationDashboardController = async (req, res) => {
   const result = await getOrganisationDashboard(
     req.body.last_days,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};

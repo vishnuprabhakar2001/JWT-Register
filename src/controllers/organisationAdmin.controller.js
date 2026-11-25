@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import config from "../config/config.js";
 import ApiError from "../utils/ApiError.js";
@@ -190,12 +189,12 @@ export const loginOrganisationUser = async ({ email, password }) => {
 
 import { refreshOrganisationSession } from "./organisationRefreshToken.controller.js";
 
-export const loginOrganisationUserController = asyncHandler(async (req, res) => {
+export const loginOrganisationUserController = async (req, res) => {
   const result = await loginOrganisationUser(req.body);
   return res.status(200).json(result);
-});
+};
 
-export const refreshOrganisationSessionController = asyncHandler(async (req, res) => {
+export const refreshOrganisationSessionController = async (req, res) => {
   const result = await refreshOrganisationSession(req.body.refresh_token);
   return res.status(200).json(result);
-});
+};

@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import { hashPassword } from "../utils/security.js";
@@ -159,50 +158,50 @@ export const unblockSubAdmin = async (subadminId, currentAdmin) => {
   };
 };
 
-export const createSubAdminController = asyncHandler(async (req, res) => {
+export const createSubAdminController = async (req, res) => {
   const result = await createSubAdmin(req.body, req.current_admin);
   return res.status(201).json(result);
-});
+};
 
-export const getAllSubAdminsController = asyncHandler(async (req, res) => {
+export const getAllSubAdminsController = async (req, res) => {
   const result = await getAllSubAdmins(req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const getSubAdminController = asyncHandler(async (req, res) => {
+export const getSubAdminController = async (req, res) => {
   const result = await getSubAdmin(req.params.subadmin_id, req.current_admin);
   return res.status(200).json(result);
-});
+};
 
-export const updateSubAdminController = asyncHandler(async (req, res) => {
+export const updateSubAdminController = async (req, res) => {
   const result = await updateSubAdmin(
     req.params.subadmin_id,
     req.body,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const deleteSubAdminController = asyncHandler(async (req, res) => {
+export const deleteSubAdminController = async (req, res) => {
   const result = await deleteSubAdmin(
     req.params.subadmin_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const blockSubAdminController = asyncHandler(async (req, res) => {
+export const blockSubAdminController = async (req, res) => {
   const result = await blockSubAdmin(
     req.params.subadmin_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};
 
-export const unblockSubAdminController = asyncHandler(async (req, res) => {
+export const unblockSubAdminController = async (req, res) => {
   const result = await unblockSubAdmin(
     req.params.subadmin_id,
     req.current_admin
   );
   return res.status(200).json(result);
-});
+};

@@ -1,4 +1,3 @@
-import asyncHandler from "../middlewares/asyncHandler.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
@@ -258,29 +257,29 @@ export const updateStudentFcmToken = async (student, newFcmToken, currentSession
   };
 };
 
-export const verifyStudentOtpController = asyncHandler(async (req, res) => {
+export const verifyStudentOtpController = async (req, res) => {
   const result = await verifyStudentOtp(req.body);
   return res.status(200).json(result);
-});
+};
 
-export const refreshStudentTokenController = asyncHandler(async (req, res) => {
+export const refreshStudentTokenController = async (req, res) => {
   const result = await refreshStudentToken(req.body.refresh_token);
   return res.status(200).json(result);
-});
+};
 
-export const logoutStudentController = asyncHandler(async (req, res) => {
+export const logoutStudentController = async (req, res) => {
   const result = await logoutStudent(
     req.current_student,
     req.current_student.current_token_sid
   );
   return res.status(200).json(result);
-});
+};
 
-export const updateStudentFcmTokenController = asyncHandler(async (req, res) => {
+export const updateStudentFcmTokenController = async (req, res) => {
   const result = await updateStudentFcmToken(
     req.current_student,
     req.body.fcm_token,
     req.current_student.current_token_sid
   );
   return res.status(200).json(result);
-});
+};
