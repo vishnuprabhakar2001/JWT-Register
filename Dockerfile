@@ -2,7 +2,7 @@ FROM node:20-slim
 
 ENV NPM_CONFIG_LOGLEVEL=warn \
     NPM_CONFIG_COLOR=false \
-    PORT=8001
+    PORT=8002
 
 WORKDIR /app
 
@@ -23,6 +23,6 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY . .
 
-EXPOSE 8001
+EXPOSE 8002
 
 CMD ["node", "index.js"]

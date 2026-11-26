@@ -7,6 +7,11 @@ services:
       - "27019:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
@@ -16,11 +21,11 @@ services:
     container_name: organisation-admin-api
     restart: unless-stopped
     ports:
-      - "8001:8001"
+      - "8002:8002"
     env_file:
       - .env
     environment:
-      PORT: 8001
+      PORT: 8002
       MONGO_URI: mongodb://mongodb:27017
       ORGANISATIONADMIN_DB_NAME: OrganisationAdmin_database
       SUPERADMIN_MONGO_URI: mongodb://reckomate-mongodb:27017
@@ -37,7 +42,8 @@ services:
       # Firebase credentials mounted read-only from host
       - ./secrets/firebase-service-account.json:/app/secrets/firebase-service-account.json:ro
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - default
       - superadmin-shared
@@ -65,7 +71,8 @@ services:
       - /app/node_modules
       - ./secrets/firebase-service-account.json:/app/secrets/firebase-service-account.json:ro
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - default
       - superadmin-shared
