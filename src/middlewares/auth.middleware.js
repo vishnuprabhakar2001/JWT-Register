@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import config from "../config/config.js";
 import ApiError from "../utils/ApiError.js";
-import { OrganisationAdmin } from "../models/OrganisationAdmin.model.js";
-import { OrganisationSubAdmin } from "../models/OrganisationSubAdmin.model.js";
-import { User } from "../models/user.model.js";
+import { OrganisationAdmin } from "../models/OrganisationAdmin.js";
+import { OrganisationSubAdmin } from "../models/OrganisationSubAdmin.js";
+import { User } from "../models/user.js";
 import { ensureSuperadminOrganisationActive } from "../utils/superadminStatus.js";
 
 function extractBearerToken(req) {

@@ -1,8 +1,11 @@
 class ApiResponse {
-  constructor(message, data = null) {
+  constructor(message = "Success", data = null, extra = null) {
     this.success = true;
     this.message = message;
     this.data = data;
+    if (extra && typeof extra === "object") {
+      Object.assign(this, extra);
+    }
   }
 }
 

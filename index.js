@@ -6,7 +6,7 @@ import connectDB from "./src/config/db.js";
 import app from "./src/app.js";
 import config from "./src/config/config.js";
 import { attachWebSocketServer } from "./src/websocket/wsServer.js";
-import { startDeadlineMonitor } from "./src/controllers/testDeadline.controller.js";
+import { startDeadlineMonitor } from "./src/controllers/testDeadline.js";
 
 const PORT = config.PORT || 8000;
 

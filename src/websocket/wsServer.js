@@ -2,13 +2,13 @@ import { WebSocketServer, WebSocket } from "ws";
 import url from "url";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
-import { User } from "../models/user.model.js";
-import { OrganisationAdmin } from "../models/OrganisationAdmin.model.js";
-import { OrganisationSubAdmin } from "../models/OrganisationSubAdmin.model.js";
-import { startTest, submitTest } from "../controllers/studentTestAttempt.controller.js";
-import { StudentTestAttempt } from "../models/StudentTestAttempt.model.js";
-import { sendRoomMessage } from "../controllers/chat.controller.js";
-import { getLiveTestsOverview, getIndividualLeaderboard } from "../controllers/leaderboard.controller.js";
+import { User } from "../models/user.js";
+import { OrganisationAdmin } from "../models/OrganisationAdmin.js";
+import { OrganisationSubAdmin } from "../models/OrganisationSubAdmin.js";
+import { startTest, submitTest } from "../controllers/studentTestAttempt.js";
+import { StudentTestAttempt } from "../models/StudentTestAttempt.js";
+import { sendRoomMessage } from "../controllers/chat.js";
+import { getLiveTestsOverview, getIndividualLeaderboard } from "../controllers/leaderboard.js";
 
 // Global connection registries
 const chatRoomSockets = new Map(); // roomId -> Set<ws>

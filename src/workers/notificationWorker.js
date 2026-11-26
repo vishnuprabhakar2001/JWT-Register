@@ -1,6 +1,6 @@
 import connectDB from "../config/db.js";
-import { NotificationOutbox } from "../models/NotificationOutbox.model.js";
-import { checkDeadlines } from "../controllers/testDeadline.controller.js";
+import { NotificationOutbox } from "../models/NotificationOutbox.js";
+import { checkDeadlines } from "../controllers/testDeadline.js";
 
 console.log("[NotificationWorker] Starting notification worker process...");
 
