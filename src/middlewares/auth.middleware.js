@@ -161,11 +161,16 @@ export const authenticateStudent = async (req, res, next) => {
     }
 
     // Verify session ID (single active device check)
-    if (payload.sid && student.current_token_sid && payload.sid !== student.current_token_sid) {
-      throw new ApiError(
-        401,
-        "You have been logged out because your account was logged in from another device."
-      );
+    const activeSid = student.active_session_id || student.current_token_sid;
+    const tokenSid = payload.sid;
+
+    if (activeSid !== undefined && activeSid !== null) {
+      if (tokenSid !== activeSid || (typeof activeSid === "string" && activeSid.startsWith("logged_out_"))) {
+        throw new ApiError(
+          401,
+          "SESSION_TERMINATED_BY_ANOTHER_DEVICE"
+        );
+      }
     }
 
     const studentObj = student.toObject();

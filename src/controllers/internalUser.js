@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { User } from "../models/user.js";
-import { normalizePhone } from "./studentAuth.js";
+import { normalizePhone, validateAlphabeticOtp } from "./studentAuth.js";
 
 export const syncCandidateOtp = async (req, res) => {
   const { candidate_id, organisation_id, phone, otp, otp_expires_at } = req.body;
@@ -13,6 +13,9 @@ export const syncCandidateOtp = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(organisation_id)) {
     throw new ApiError(400, "Invalid organisation ID.");
   }
+
+  // Validate alphabetic OTP format
+  validateAlphabeticOtp(otp);
 
   const expiresAt = new Date(otp_expires_at);
   if (expiresAt <= new Date()) {

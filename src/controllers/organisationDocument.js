@@ -106,6 +106,65 @@ export const uploadDocument = async ({ grade_id, subject_id, file, currentAdmin 
   };
 };
 
+const YOUTUBE_HOSTS = new Set([
+  "youtube.com",
+  "www.youtube.com",
+  "m.youtube.com",
+  "music.youtube.com",
+  "youtube-nocookie.com",
+  "www.youtube-nocookie.com",
+  "youtu.be",
+  "www.youtu.be",
+]);
+
+export const isYoutubeUrl = (rawUrl) => {
+  let val = (rawUrl || "").trim();
+  if (!val) return false;
+  if (!val.includes("://")) val = `https://${val}`;
+  try {
+    const parsed = new URL(val);
+    const host = (parsed.hostname || "").toLowerCase();
+    return YOUTUBE_HOSTS.has(host);
+  } catch {
+    return false;
+  }
+};
+
+export const normalizeWebsiteUrl = (rawUrl) => {
+  let url = (rawUrl || "").trim();
+  if (!url) {
+    throw new ApiError(400, "website_url is required.");
+  }
+  if (url.length > 2048) {
+    throw new ApiError(400, "The website URL is too long (maximum 2048 characters).");
+  }
+  if (/\s/.test(url)) {
+    throw new ApiError(400, "The website URL cannot contain spaces.");
+  }
+  if (!url.includes("://")) {
+    url = `https://${url}`;
+  }
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new ApiError(400, "The website URL is not valid.");
+  }
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new ApiError(400, "Only http:// and https:// website URLs are supported.");
+  }
+  if (!parsed.hostname) {
+    throw new ApiError(400, "The website URL is not valid.");
+  }
+  if (parsed.username || parsed.password) {
+    throw new ApiError(400, "Website URLs with a username or password are not allowed.");
+  }
+  if (parsed.port && ![80, 443].includes(Number(parsed.port))) {
+    throw new ApiError(400, "Only ports 80 and 443 are supported for website URLs.");
+  }
+  return url;
+};
+
 export const uploadWebsiteDocument = async ({
   grade_id,
   subject_id,
@@ -113,11 +172,13 @@ export const uploadWebsiteDocument = async ({
   currentAdmin,
 }) => {
   const { grade, subject } = await validateGradeAndSubject(grade_id, subject_id, currentAdmin);
+  const normalizedUrl = normalizeWebsiteUrl(website_url);
+
   const adminId = currentAdmin._id;
   const orgId = String(currentAdmin.organisation_id || adminId);
   const fileId = crypto.randomUUID().replace(/-/g, "");
 
-  const chunks = [`Website reference content crawled from ${website_url}`];
+  const chunks = [`Website reference content crawled from ${normalizedUrl}`];
 
   const doc = await OrganisationDocument.create({
     file_id: fileId,
@@ -128,9 +189,9 @@ export const uploadWebsiteDocument = async ({
     section: grade.section || "",
     subject_id: String(subject._id),
     subject_name: subject.subject_name,
-    document_name: website_url,
+    document_name: normalizedUrl,
     file_type: "website",
-    source_url: website_url,
+    source_url: normalizedUrl,
     chunks,
     chunks_stored: chunks.length,
     created_by: adminId,
@@ -138,7 +199,7 @@ export const uploadWebsiteDocument = async ({
 
   return {
     success: true,
-    message: "Website content stored successfully.",
+    message: "Document uploaded successfully.",
     document: {
       file_id: fileId,
       grade_id: String(grade._id),
@@ -146,9 +207,12 @@ export const uploadWebsiteDocument = async ({
       section: grade.section,
       subject_id: String(subject._id),
       subject_name: subject.subject_name,
-      document_name: website_url,
+      document_name: normalizedUrl,
       file_type: "website",
+      pages_stored: 1,
       chunks_stored: chunks.length,
+      failed_pages: [],
+      notes: [],
       created_at: doc.created_at,
     },
   };
@@ -177,7 +241,7 @@ export const uploadYoutubeDocument = async ({
     subject_id: String(subject._id),
     subject_name: subject.subject_name,
     document_name: youtube_url,
-    file_type: "youtube",
+    file_type: "youtube URL",
     source_url: youtube_url,
     chunks,
     chunks_stored: chunks.length,
@@ -186,7 +250,7 @@ export const uploadYoutubeDocument = async ({
 
   return {
     success: true,
-    message: "YouTube document transcript stored successfully.",
+    message: "Document uploaded successfully.",
     document: {
       file_id: fileId,
       grade_id: String(grade._id),
@@ -195,7 +259,7 @@ export const uploadYoutubeDocument = async ({
       subject_id: String(subject._id),
       subject_name: subject.subject_name,
       document_name: youtube_url,
-      file_type: "youtube",
+      file_type: "youtube URL",
       chunks_stored: chunks.length,
       created_at: doc.created_at,
     },
@@ -236,32 +300,42 @@ export const uploadOrganisationDocument = async (req, res) => {
   const { grade_id, subject_id, website_url, youtube_url } = req.body;
   const file = req.file;
 
-  const sources = [Boolean(file), Boolean(website_url), Boolean(youtube_url)].filter(Boolean);
+  let url = (website_url || "").trim();
+  let videoUrl = (youtube_url || "").trim();
+  const hasFile = Boolean(file);
+
+  // A YouTube link typed into website_url is a YouTube video, not a website to crawl
+  if (url && !videoUrl && isYoutubeUrl(url)) {
+    videoUrl = url;
+    url = "";
+  }
+
+  const sources = [hasFile, Boolean(url), Boolean(videoUrl)].filter(Boolean);
   if (sources.length > 1) {
     throw new ApiError(400, "Send only one of upload_document, website_url or youtube_url.");
   }
 
-  if (youtube_url) {
+  if (videoUrl) {
     const result = await uploadYoutubeDocument({
       grade_id,
       subject_id,
-      youtube_url,
+      youtube_url: videoUrl,
       currentAdmin: req.current_admin,
     });
-    return res.status(200).json(new ApiResponse(result.message, result.data));
+    return res.status(200).json(result);
   }
 
-  if (website_url) {
+  if (url) {
     const result = await uploadWebsiteDocument({
       grade_id,
       subject_id,
-      website_url,
+      website_url: url,
       currentAdmin: req.current_admin,
     });
-    return res.status(200).json(new ApiResponse(result.message, result.data));
+    return res.status(200).json(result);
   }
 
-  if (!file) {
+  if (!hasFile) {
     throw new ApiError(400, "Send a file in upload_document, a link in website_url or a YouTube link in youtube_url.");
   }
 
@@ -271,7 +345,7 @@ export const uploadOrganisationDocument = async (req, res) => {
     file,
     currentAdmin: req.current_admin,
   });
-  return res.status(200).json(new ApiResponse(result.message, result.data));
+  return res.status(200).json(result);
 };
 
 export const getAllDocuments = async (req, res) => {

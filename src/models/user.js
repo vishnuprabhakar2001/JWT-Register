@@ -28,7 +28,10 @@ const userSchema = new mongoose.Schema(
     // OTP and auth
     otp: { type: String, default: null },
     otp_expires_at: { type: Date, default: null },
+    otp_verified_at: { type: Date, default: null },
     fcm_token: { type: String, default: null },
+    fcm_token_updated_at: { type: Date, default: null },
+    active_session_id: { type: String, default: null },
     current_token_sid: { type: String, default: null },
     token_issued_at: { type: Date, default: null },
     token_family: { type: String, default: null },

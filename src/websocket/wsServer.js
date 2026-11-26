@@ -258,4 +258,22 @@ export const attachWebSocketServer = (httpServer) => {
   return wss;
 };
 
+export const evictStudent = (studentId, preserveSessionId = null, code = 1008, reason = "LOGGED_IN_ON_ANOTHER_DEVICE") => {
+  if (!studentId) return;
+  const cleanId = String(studentId).trim();
+  const set = studentSessionSockets.get(cleanId);
+  if (set) {
+    for (const item of Array.from(set)) {
+      if (preserveSessionId && item.sessionId === preserveSessionId) continue;
+      try {
+        item.ws.close(code, reason);
+      } catch {}
+      set.delete(item);
+    }
+    if (set.size === 0) {
+      studentSessionSockets.delete(cleanId);
+    }
+  }
+};
+
 export default attachWebSocketServer;
