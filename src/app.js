@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import config from "./config/config.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import { openApiSpec, getSwaggerHtml } from "./docs/swaggerDoc.js";
 
 // Routes
 import organisationAdminRoutes from "./routes/organisationAdmin.js";
@@ -31,6 +32,7 @@ import chatRoutes from "./routes/chat.js";
 import documentChatRoutes from "./routes/documentChat.js";
 import organisationDashboardRoutes from "./routes/organisationDashboard.js";
 import notificationRoutes from "./routes/notification.js";
+import studentUsageRoutes from "./routes/studentUsage.js";
 
 const app = express();
 
@@ -71,13 +73,28 @@ app.use((req, res, next) => {
 });
 
 // --------------------------------------------------
-// Root & Health
+// Root & Health & Swagger Documentation
 // --------------------------------------------------
+app.get("/openapi.json", (req, res) => {
+  return res.status(200).json(openApiSpec);
+});
+
+const serveSwaggerDocs = (req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  return res.status(200).send(getSwaggerHtml());
+};
+
+app.get("/api-docs", serveSwaggerDocs);
+app.get("/docs", serveSwaggerDocs);
+
 app.get("/", (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Organisation Admin API is running",
-    data: null,
+    data: {
+      docs: "/docs",
+      openapi: "/openapi.json",
+    },
   });
 });
 
@@ -120,6 +137,7 @@ app.use("/api/chat", chatRoutes);
 app.use("", documentChatRoutes); // /getChatdocument, /createChatSessions, etc.
 app.use("/api/organisation-admin", organisationDashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/student/usage", studentUsageRoutes);
 
 // --------------------------------------------------
 // Global Error Handler

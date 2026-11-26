@@ -9,6 +9,13 @@ import { startTest, submitTest } from "../controllers/studentTestAttempt.js";
 import { StudentTestAttempt } from "../models/StudentTestAttempt.js";
 import { sendRoomMessage } from "../controllers/chat.js";
 import { getLiveTestsOverview, getIndividualLeaderboard } from "../controllers/leaderboard.js";
+import {
+  startUsageSession,
+  recordUsageKeepAlive,
+  endUsageSession,
+  handleSocketDisconnect,
+} from "../controllers/studentUsage.js";
+import crypto from "crypto";
 
 // Global connection registries
 const chatRoomSockets = new Map(); // roomId -> Set<ws>
@@ -110,12 +117,69 @@ export const attachWebSocketServer = (httpServer) => {
     // 1. /ws/auth/session
     if (pathname === "/ws/auth/session") {
       const studentId = user.id;
+      const connectionId = crypto.randomUUID().replace(/-/g, "");
+      ws.connectionId = connectionId;
+
       if (!studentSessionSockets.has(studentId)) {
         studentSessionSockets.set(studentId, new Set());
       }
-      studentSessionSockets.get(studentId).add({ ws, sessionId: user.sessionId });
+      studentSessionSockets.get(studentId).add({ ws, sessionId: user.sessionId, connectionId });
 
-      ws.on("close", () => {
+      // Emit connected confirmation
+      ws.send(JSON.stringify({ event: "CONNECTED", data: { status: "ACTIVE" } }));
+
+      ws.on("message", async (msg) => {
+        try {
+          let parsed;
+          try {
+            parsed = JSON.parse(msg.toString());
+          } catch {
+            parsed = { event: msg.toString().trim() };
+          }
+
+          const event = (parsed.event || parsed.type || "").toUpperCase();
+          const payload = parsed.data || {};
+
+          if (event === "PING" || event === "HEARTBEAT") {
+            ws.send(JSON.stringify({ event: "PONG", data: { timestamp: Date.now() / 1000 } }));
+
+            const usageSid = payload.usage_session_id || parsed.usage_session_id;
+            if (usageSid) {
+              await recordUsageKeepAlive({
+                studentId: user.id,
+                orgId: user.organisation_id,
+                authSessionId: user.sessionId,
+                usageSessionId: String(usageSid).trim(),
+                connectionId,
+              });
+            }
+          } else if (event === "USAGE_START" || event === "USAGE_ACTIVE") {
+            const result = await startUsageSession({
+              student: { _id: user.id, organisation_id: user.organisation_id },
+              authSessionId: user.sessionId,
+              connectionId,
+              correlationId: payload.correlation_id,
+            });
+            ws.send(JSON.stringify({ event: "USAGE_SESSION_STARTED", success: true, data: result }));
+          } else if (event === "USAGE_END" || event === "USAGE_INACTIVE") {
+            const usageSid = payload.usage_session_id || parsed.usage_session_id;
+            if (usageSid) {
+              const result = await endUsageSession({
+                studentId: user.id,
+                orgId: user.organisation_id,
+                usageSessionId: String(usageSid).trim(),
+                connectionId,
+                reason: payload.reason || "app_background",
+              });
+              ws.send(JSON.stringify({ event: "USAGE_SESSION_ENDED", success: true, data: result }));
+            }
+          }
+        } catch (err) {
+          ws.send(JSON.stringify({ event: "ERROR", message: err.message }));
+        }
+      });
+
+      ws.on("close", async () => {
         const set = studentSessionSockets.get(studentId);
         if (set) {
           for (const item of set) {
@@ -123,6 +187,7 @@ export const attachWebSocketServer = (httpServer) => {
           }
           if (set.size === 0) studentSessionSockets.delete(studentId);
         }
+        await handleSocketDisconnect(studentId, user.organisation_id, connectionId);
       });
       return;
     }
@@ -205,7 +270,20 @@ export const attachWebSocketServer = (httpServer) => {
       return;
     }
 
-    // 5. /ws/chat/:room_id
+    // 5. /ws/chat/notifications & /ws/chat/user
+    if (pathname === "/ws/chat/notifications" || pathname === "/ws/chat/user") {
+      ws.on("message", (data) => {
+        try {
+          const parsed = JSON.parse(data.toString());
+          if (parsed.event === "ping" || parsed.event === "PING") {
+            ws.send(JSON.stringify({ event: "pong", data: { timestamp: Date.now() / 1000 } }));
+          }
+        } catch {}
+      });
+      return;
+    }
+
+    // 6. /ws/chat/:room_id
     const chatMatch = pathname.match(/^\/ws\/chat\/([^/]+)$/);
     if (chatMatch) {
       const roomId = chatMatch[1];
@@ -258,7 +336,7 @@ export const attachWebSocketServer = (httpServer) => {
   return wss;
 };
 
-export const evictStudent = (studentId, preserveSessionId = null, code = 1008, reason = "LOGGED_IN_ON_ANOTHER_DEVICE") => {
+export const evictStudent = (studentId, preserveSessionId = null, code = 4001, reason = "LOGGED_IN_ON_ANOTHER_DEVICE") => {
   if (!studentId) return;
   const cleanId = String(studentId).trim();
   const set = studentSessionSockets.get(cleanId);
@@ -266,6 +344,15 @@ export const evictStudent = (studentId, preserveSessionId = null, code = 1008, r
     for (const item of Array.from(set)) {
       if (preserveSessionId && item.sessionId === preserveSessionId) continue;
       try {
+        item.ws.send(
+          JSON.stringify({
+            event: "SESSION_REVOKED",
+            data: {
+              reason: "LOGGED_IN_ON_ANOTHER_DEVICE",
+              message: "Your account was signed in on another device.",
+            },
+          })
+        );
         item.ws.close(code, reason);
       } catch {}
       set.delete(item);

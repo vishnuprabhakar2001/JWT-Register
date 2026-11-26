@@ -26,4 +26,5 @@ export { ChatNotification } from "./ChatNotification.js";
 export { DocumentChatSession } from "./DocumentChatSession.js";
 export { DocumentChatMessage } from "./DocumentChatMessage.js";
 export { OrganisationDocument } from "./OrganisationDocument.js";
+export { StudentUsageSession } from "./StudentUsageSession.js";
 export { getSuperadminOrganisationModel } from "./SuperadminOrganisation.js";
